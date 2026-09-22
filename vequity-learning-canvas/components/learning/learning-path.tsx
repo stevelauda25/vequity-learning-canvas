@@ -13,7 +13,18 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { chapters, getCard, glossary, sourceUrl } from '@/lib/knowledge';
+import {
+  chapters,
+  getCard,
+  glossary,
+  sourceUrl,
+  cardKindLabel,
+} from '@/lib/knowledge';
+import {
+  LatestUpdateNotice,
+  ClientDirectionVisual,
+  DataReadinessVisual,
+} from './client-updates';
 import { lessons } from '@/lib/learning-path';
 import type { Scenario } from './wireframes';
 import {
@@ -66,7 +77,7 @@ function LessonPage({
     ...new Map(
       lesson.details
         .flatMap((id) => getCard(id).sources)
-        .map((source) => [`${source.doc}-${source.page}`, source]),
+        .map((source) => [sourceUrl(source), source]),
     ).values(),
   ];
 
@@ -110,6 +121,9 @@ function LessonPage({
         ))}
       </div>
 
+      {index === 0 && (
+        <LatestUpdateNotice onOpen={() => onNavigate('updates')} />
+      )}
       <header className="lesson-heading">
         <p>{chapters[index].title}</p>
         <h2 ref={title} tabIndex={-1} id="lesson-title">
@@ -120,15 +134,16 @@ function LessonPage({
       {index === 0 && (
         <p className="lesson-orientation">
           <BookOpen size={18} aria-hidden="true" />
-          Follow eight short chapters in order, or jump using the chapter
-          navigation. Each ends with one optional knowledge check. Use Canvas to
-          see how the ideas connect.
+          Follow eight foundational chapters, then explore design direction and
+          report data. Jump to any topic in the navigation. Each ends with one
+          optional knowledge check. Use Canvas to see the connections.
         </p>
       )}
 
       <section className="lesson-story" aria-labelledby="story-title">
         <div className="lesson-story-label">
-          ONE CONTINUING EXAMPLE <span>Fictional company & data</span>
+          {lesson.storyLabel || 'ONE CONTINUING EXAMPLE'}{' '}
+          <span>{lesson.storyNote || 'Fictional company & data'}</span>
         </div>
         <h3 id="story-title">{lesson.story.title}</h3>
         <p>{lesson.story.text}</p>
@@ -229,15 +244,7 @@ function LessonPage({
               <summary>
                 <span>
                   {card.title}
-                  <small>
-                    {card.kind === 'proposal'
-                      ? 'Design proposal'
-                      : card.kind === 'question'
-                        ? 'Review observation'
-                        : card.kind === 'context'
-                          ? 'Document context'
-                          : 'Product requirement'}
-                  </small>
+                  <small>{cardKindLabel(card.kind)}</small>
                 </span>
                 <ChevronDown size={16} />
               </summary>
@@ -253,8 +260,7 @@ function LessonPage({
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {source.doc === 'prd' ? 'PRD' : 'Design Starter'} · p.{' '}
-                      {source.page}
+                      {source.label}
                       <ArrowUpRight size={14} />
                     </a>
                   ))}
@@ -274,16 +280,17 @@ function LessonPage({
       {index === lessons.length - 1 && (
         <section className="lesson-wrapup">
           <span className="lesson-eyebrow">YOU’VE REACHED THE END</span>
-          <h3>Can you explain the ExampleCo loop?</h3>
+          <h3>Can you connect the product and the latest direction?</h3>
           <p>
-            Who the report is for → how it first appears → what its evidence
-            means → what Watch changes → what happens next month.
+            Explain the report and its monthly loop, then distinguish the latest
+            design direction, dated implementation evidence, and the questions
+            that still need examples or clarification.
           </p>
           <p>
-            {completed.length} of 8 knowledge checks passed.{' '}
+            {completed.length} of {lessons.length} knowledge checks passed.{' '}
             {remaining.length
               ? 'Revisit any unanswered chapter whenever you want.'
-              : 'All eight checks passed. Use the canvas or source references for deeper review.'}
+              : 'All checks passed. Use the canvas or source references for deeper review.'}
           </p>
           <div>
             {remaining.length > 0 && (
@@ -330,10 +337,10 @@ function LessonPage({
       <p className="lesson-citations">
         Based on{' '}
         {sources.map((source, i) => (
-          <span key={`${source.doc}-${source.page}`}>
+          <span key={sourceUrl(source)}>
             {i > 0 && ' · '}
             <a href={sourceUrl(source)} target="_blank" rel="noreferrer">
-              {source.doc === 'prd' ? 'PRD' : 'Starter'} p. {source.page}
+              {source.label}
             </a>
           </span>
         ))}
@@ -351,6 +358,8 @@ function LessonVisual({
   onWireframe: Props['onWireframe'];
   onEmail: Props['onEmail'];
 }) {
+  if (id === 'updates') return <ClientDirectionVisual />;
+  if (id === 'readiness') return <DataReadinessVisual />;
   if (id === 'overview') return <ProductOverview onWireframe={onWireframe} />;
   if (id === 'journey' || id === 'delivery')
     return (

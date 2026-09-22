@@ -1,6 +1,16 @@
 # Vequity — Exit Radar Learning Canvas
 
-An English learning workspace grounded in the supplied Design Starter and PRD. Eight connected chapters cover the feature, personas, journeys, report structure, evidence rules, wireframes, notifications, and scope.
+An English learning workspace grounded in the supplied Design Starter, PRD, and design references. Ten connected chapters cover the eight original product topics plus design direction and report data.
+
+## Design direction and report data
+
+Open `http://localhost:3000/` and choose **Design direction**. Chapters 9–10, **Design direction** and **Report & data**, are available in both Learn and Canvas, with source-linked cards and optional knowledge checks. Existing answers to the eight foundational checks are preserved.
+
+Design direction covers the existing Paper foundation, the three requested presentation directions, and lessons from the Scout reference. Report & data embeds the supplied HTML as a visual preview, with adjacent tabs for the documented JSON structure and fictional example. It also explains missing fields and the documentation's implementation snapshot of 21 September 2026. The Paper file has not been inspected here.
+
+`public/sources/client-updates/` bundles the unmodified HTML, Markdown, and supplied video; a readable rendering of the Markdown; its fictional Acme Payroll JSON sample; and an attributed transcript of the design requests. `lib/report-reference.json` contains the three code blocks extracted verbatim from the Markdown for the inline viewer. The VanZandt report and Acme Payroll sample are separate examples. The original eight chapters continue to describe the PRD contract, not verified API readiness.
+
+The GitHub project lives in `vequity-learning-canvas/`. The existing export ZIP is a separate snapshot; rebuild it when a new downloadable package is needed.
 
 ## Run locally
 
@@ -31,7 +41,7 @@ The latest source review fixed rigid timeline heights, overview tiles responding
 
 Click a canvas card for its full explanation and links to the original PDF page. The wireframe explorer includes sparse, ExampleCo’s next month, dense, loading, being prepared, five-year fallback, quiet month, and retry scenarios. Both personas and the proposed Watch/Unwatch interaction can be explored. Notification previews link back to the matching report scenario. The continuing example moves from 12 deals on August 15 to 15 on September 15; the dense scenario is a separate illustration of the maximum layout.
 
-All simulated company names, figures, dates, and quotes are fictional. Sample source buttons intentionally open a fictional-source preview. No production data is fetched; no subscriptions are created; no emails are sent. Correct knowledge-check answers and acceptance-checklist progress are saved in browser storage only, with a temporary in-memory fallback when writes are blocked. Visiting a chapter does not count as passing its check.
+The interactive learning scenarios use fictional company names, figures, dates, and quotes; their sample source buttons open a fictional-source preview. The supplied VanZandt HTML is labeled separately as a dated report artifact, while the Acme Payroll JSON is the documentation’s fictional example. No production data is fetched; no subscriptions are created; no emails are sent. Correct knowledge-check answers and acceptance-checklist progress are saved in browser storage only, with a temporary in-memory fallback when writes are blocked. Visiting a chapter does not count as passing its check.
 
 The interface is predominantly grayscale: white cards, neutral gray surfaces, and 0.5–1px outlines using black at 10% opacity (8% for quiet dividers). Vibrant blue from [Vequity’s website](https://vequity.ai/) (#036AD3) anchors the intro card, window-rule strip, monthly-refresh strip, and chapter badges, with white text and icons. The rule’s default window uses a white number tile with blue text; its conditional fallback uses a darker blue tile with white text. Actions inside blue strips use white buttons with blue labels and arrows. Other explanatory cards remain neutral. Blue also marks primary actions, active controls, links, and small markers. Primary-button icons inherit the label color so they stay white on blue. Canvas keeps a neutral dotted background. Font weights remain capped at medium (500) across lessons, canvas cards, navigation, and dialogs. The supplied [Power Overview](https://futuristic-ui-exploration.vercel.app/power-overview/index.html), [Interactive Timeline](https://futuristic-ui-exploration.vercel.app/interactive-timeline/dist/index.html), and [Liquid Priority Stack](https://futuristic-ui-exploration.vercel.app/liquid-priority-stack/dist/index.html) inspired the metric tiles, selectable ExampleCo timeline, and expandable “What to remember” cards. These are learning interactions: they do not introduce new product requirements. Motion respects the reader’s reduced-motion preference.
 
@@ -77,7 +87,7 @@ The included `vercel.json` specifies these settings:
 
 Use `npm ci` if setting an explicit install command. No application environment variables are required. Vercel deployment environment variables provide the absolute social-preview origin; optionally set `SITE_ORIGIN` to a full URL for a custom domain. The source PDFs are included as learning resources.
 
-The localhost version has not been published. A Vercel deployment is the next step after local review, as requested.
+When this repository is connected to Vercel, updates to its production branch can trigger a deployment. Check the deployment status to confirm which revision is live.
 
 Official deployment reference: https://vercel.com/docs/frameworks/frontend/vite
 
@@ -85,10 +95,13 @@ Official deployment reference: https://vercel.com/docs/frameworks/frontend/vite
 
 - `app/page.tsx`: workspace, canvas controls, navigation, dialogs, and local learning progress.
 - `lib/knowledge.ts`: source-linked requirements, glossary, and acceptance checklist.
-- `lib/learning-path.ts`: eight lessons, continuing examples, and knowledge-check validation.
+- `lib/learning-path.ts`: ten lessons, continuing examples, and knowledge-check validation.
+- `lib/client-updates.ts`: source-linked client direction, artifact observations, readiness notes, and the two update lessons.
 - `components/learning/learning-path.tsx`: readable lessons, visual examples, quizzes, and inline reference details.
 - `components/learning/exploration-widgets.tsx`: product overview, selectable report timeline, and expandable learning cards.
-- `components/learning/chapter-content.tsx`: the eight visual chapters.
+- `components/learning/chapter-content.tsx`: the ten visual chapters.
+- `components/learning/client-updates.tsx`: design direction, artifact observations, readiness details, and reference video.
+- `components/learning/report-artifact-viewer.tsx`: rendered HTML and keyboard-accessible JSON reference tabs, shared by Learn and Canvas.
 - `components/learning/wireframes.tsx`: interactive scenarios and email previews.
 - `components/dev/interface-review.tsx`: local InterfaceKit editor integration.
 - `hooks/use-browser-storage.ts`: hydration-safe progress persistence with a temporary fallback.

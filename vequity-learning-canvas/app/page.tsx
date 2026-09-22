@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/dialog';
 import { ChapterContent } from '@/components/learning/chapter-content';
 import { LearningPath } from '@/components/learning/learning-path';
+import { UpdateResourceLinks } from '@/components/learning/client-updates';
 import {
   checkedLessons,
   learningProgressKey,
@@ -53,6 +54,7 @@ import {
   chapters,
   glossary,
   sourceUrl,
+  cardKindLabel,
   type Card,
 } from '@/lib/knowledge';
 import { fitRegion, zoomAt, type Camera } from '@/lib/viewport';
@@ -72,6 +74,8 @@ const connectionLabels = [
   'IN PRACTICE',
   'THE MONTHLY LOOP',
   'THE BOUNDARIES',
+  'THE DESIGN DIRECTION',
+  'WHAT THE DATA SUPPORTS',
 ];
 export default function Home() {
   const [active, setActive] = useState('overview');
@@ -224,6 +228,13 @@ export default function Home() {
     const el = stage.current;
     if (!el || learning || interfaceEditing) return;
     const wheel = (e: WheelEvent) => {
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.target instanceof Element &&
+        e.target.closest('[data-canvas-scroll]')
+      )
+        return;
       e.preventDefault();
       setAnimate(false);
       const bounds = el.getBoundingClientRect();
@@ -264,7 +275,7 @@ export default function Home() {
         modalOpen ||
         (e.target instanceof HTMLElement &&
           e.target.closest(
-            'input,textarea,select,button,a,summary,[contenteditable]',
+            'input,textarea,select,button,a,summary,[contenteditable],[data-canvas-scroll]',
           ))
       )
         return;
@@ -451,6 +462,13 @@ export default function Home() {
         <button className="search-preview" onClick={() => setSearchOpen(true)}>
           <Search size={15} /> Search the project <kbd>⌘ K</kbd>
         </button>
+        <Button
+          className="update-shortcut"
+          variant="outline"
+          onClick={() => showLearning('updates')}
+        >
+          <BookOpen size={15} /> Design direction <ArrowRight size={14} />
+        </Button>
         <p className="nav-label">YOUR LEARNING PATH</p>
         <nav aria-label="Project chapters">
           {chapters.map((c, i) => (
@@ -461,7 +479,9 @@ export default function Home() {
               onClick={() => focusChapter(c.id)}
               aria-current={c.id === active ? 'location' : undefined}
             >
-              <span className="nav-index">0{i + 1}</span>
+              <span className="nav-index">
+                {String(i + 1).padStart(2, '0')}
+              </span>
               {c.title}
               {completed.includes(c.id) ? (
                 <Check
@@ -477,10 +497,17 @@ export default function Home() {
         </nav>
         <div className="learning-progress">
           <span>
-            Knowledge checks <b>{completed.length}/8</b>
+            Knowledge checks{' '}
+            <b>
+              {completed.length}/{chapters.length}
+            </b>
           </span>
           <div>
-            <i style={{ width: `${(completed.length / 8) * 100}%` }} />
+            <i
+              style={{
+                width: `${(completed.length / chapters.length) * 100}%`,
+              }}
+            />
           </div>
           <small>
             {progressSaved
@@ -492,7 +519,7 @@ export default function Home() {
           <button className="source-note" onClick={() => setResources(true)}>
             <FileText size={16} />
             <div>
-              <strong>Grounded in 2 documents</strong>
+              <strong>Brief + client references</strong>
               <small>Sources & product glossary</small>
             </div>
             <ArrowUpRight size={12} />
@@ -623,7 +650,9 @@ export default function Home() {
                   }}
                 >
                   <div className="section-heading">
-                    <span className="section-num">0{i + 1}</span>
+                    <span className="section-num">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
                     <div>
                       <p>{c.kicker}</p>
                       <h2 id={`heading-${c.id}`}>{c.title}</h2>
@@ -744,7 +773,7 @@ export default function Home() {
                           fill={active === c.id ? '#ffffff' : '#6e6e6e'}
                           fontSize="120"
                         >
-                          0{i + 1}
+                          {String(i + 1).padStart(2, '0')}
                         </text>
                       </g>
                     ))}
@@ -789,13 +818,7 @@ export default function Home() {
         >
           <div className="detail-header">
             <span className={`detail-kind ${selected?.kind || 'requirement'}`}>
-              {selected?.kind === 'proposal'
-                ? 'Design proposal'
-                : selected?.kind === 'question'
-                  ? 'Review observation'
-                  : selected?.kind === 'context'
-                    ? 'Document context'
-                    : 'Product requirement'}
+              {cardKindLabel(selected?.kind)}
             </span>
             <DialogTitle ref={detailTitle} tabIndex={-1}>
               {selected?.title}
@@ -819,7 +842,7 @@ export default function Home() {
                 >
                   <FileText size={15} />
                   {source.label}
-                  <small>Page {source.page}</small>
+                  {source.page && <small>Page {source.page}</small>}
                   <ArrowUpRight size={14} />
                 </a>
               ))}
@@ -871,8 +894,8 @@ export default function Home() {
             )}
           </div>
           <small className="search-count">
-            {results.length} concepts · Search both source documents through
-            their mapped requirements
+            {results.length} concepts · Requirements, client direction, and
+            dated reference evidence
           </small>
         </DialogContent>
       </Dialog>
@@ -880,8 +903,9 @@ export default function Home() {
         <DialogContent className="resources-modal">
           <DialogTitle>Sources & product glossary</DialogTitle>
           <DialogDescription>
-            Everything starts with these two documents. Page references on each
-            card connect the canvas to the source.
+            The original brief defines the product. Client messages, data
+            artifacts, and the Scout demo explain the latest direction and
+            evidence. Each card links back to its sources.
           </DialogDescription>
           <div className="resource-links">
             <a
@@ -909,10 +933,13 @@ export default function Home() {
               <ArrowUpRight />
             </a>
           </div>
+          <h3>Design references & report artifacts</h3>
+          <UpdateResourceLinks />
           <div className="resource-notice">
             <InfoDot />
-            Reference mock on EPD-2389 is pending. These wireframes are
-            independently proposed from the PDF requirements.
+            The client’s HTML is an example. The Paper file has not been
+            inspected here; its link is still needed. Existing learning
+            wireframes are proposals.
           </div>
           <h3>Speak the product’s language</h3>
           <dl className="glossary">

@@ -1,9 +1,13 @@
+import { clientUpdateLessons } from './client-updates.ts';
+
 export type Lesson = {
   id: string;
   question: string;
   answer: string;
   essentials: { title: string; text: string }[];
   story: { title: string; text: string };
+  storyLabel?: string;
+  storyNote?: string;
   terms: string[];
   details: string[];
   quiz: {
@@ -14,8 +18,8 @@ export type Lesson = {
   };
 };
 
-// The same fictional company anchors all eight lessons. Requirements remain
-// linked to the source-mapped cards in knowledge.ts.
+// Eight foundational lessons follow ExampleCo; two update lessons use supplied
+// client evidence. Requirements remain linked to their original sources.
 export const lessons: Lesson[] = [
   {
     id: 'overview',
@@ -324,6 +328,7 @@ export const lessons: Lesson[] = [
         'V1 uses a fixed monthly cadence with personal subscriptions. The email is a headline and link; it does not contain the whole report. First generation remains operator-triggered.',
     },
   },
+  ...clientUpdateLessons,
 ];
 
 export const learningProgressKey = 'vequity-knowledge-checks-v1';

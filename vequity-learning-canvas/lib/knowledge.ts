@@ -1,5 +1,7 @@
-export type Source = { doc: 'prd' | 'starter'; page: number; label: string };
-export type Card = { id: string; chapter: string; title: string; summary: string; kind?: 'requirement' | 'proposal' | 'question' | 'context'; points: string[]; sources: Source[] };
+import { clientUpdateCards } from './client-updates.ts';
+export type Source = { doc: 'prd' | 'starter'; page: number; label: string; url?: never } | { doc: 'reference'; label: string; url: string; page?: never };
+export type Card = { id: string; chapter: string; title: string; summary: string; kind?: 'requirement' | 'proposal' | 'question' | 'context' | 'update' | 'snapshot'; points: string[]; sources: Source[] };
+export const cardKindLabel = (kind: Card['kind']) => ({ requirement: 'Product requirement', proposal: 'Design proposal', question: 'Review observation', context: 'Document context', update: 'Client direction', snapshot: 'Dated evidence' })[kind || 'requirement'];
 const prd = (page: number, label: string): Source => ({ doc: 'prd', page, label: `PRD · ${label}` });
 const starter = (page: number): Source => ({ doc: 'starter', page, label: `Design Starter · p. ${page}` });
 export const chapters = [
@@ -11,8 +13,11 @@ export const chapters = [
  { id:'states',title:'Wireframes & states',kicker:'MAKE IT TANGIBLE',subtitle:'Explore the report in real-world conditions',x:1390,y:2120,w:1080,h:920,takeaway:'Sparse is the default. Loading, no report, an extended window, and a quiet month each need a clear, intentional experience.' },
  { id:'delivery',title:'Refresh & notifications',kicker:'THE RETURN LOOP',subtitle:'Monthly reports. Personal subscriptions.',x:80,y:3310,w:1080,h:820,takeaway:'Every generated report refreshes monthly. Only watchers receive the email. A failed refresh preserves the last good report and moves the next date.' },
  { id:'scope',title:'Scope & decisions',kicker:'KEEP THE BOUNDARIES CLEAR',subtitle:'What ships, what is proposed, and what comes later',x:1390,y:3310,w:1080,h:820,takeaway:'Build the evidence-led report first. Watch interactions and change presentation are design decisions; broader automation and guidance are future work.' },
+ { id:'updates',title:'Design direction',kicker:'SHAPE THE REPORT',subtitle:'Visual foundations, exploration directions, and inspiration',x:80,y:4490,w:1080,h:1050,takeaway:'Keep the Paper foundation and explore simple, cards/table, and changes-first presentations. Make the report easy to scan, insightful, and interesting.' },
+ { id:'readiness',title:'Report & data',kicker:'EXPLORE THE SOURCE MATERIAL',subtitle:'The rendered report, JSON structure, and data dependencies',x:1390,y:4490,w:1080,h:1050,takeaway:'Use the supplied report to understand missing data, the schema to track dependencies, and consecutive reports to prepare a truthful view of changes.' },
 ];
 export const cards: Card[] = [
+ ...clientUpdateCards,
  {id:'concept',chapter:'overview',title:'Know who’s buying. Understand why.',summary:'A monthly, evidence-led report of the companies acquiring businesses like yours.',kind:'requirement',points:[
  'Exit Radar v1 is a feature in the existing Vequity Intelligence area. It replaces the Coming soon page and connects the Company Home card to the live report.',
  'The core promise: who is buying in a company’s space, why those acquisitions happened, and what changed since the previous monthly report.',
@@ -225,5 +230,5 @@ export const glossary = [
  ['n/d','Not disclosed: a transaction value is unavailable.'],
  ['Buying thesis','A one-line summary of a buyer’s acquisition pattern, grounded in public transaction evidence.'],
 ];
-export const sourceUrl = (source: Source) => `/sources/${source.doc === 'prd' ? 'prd' : 'design-starter'}.pdf#page=${source.page}`;
+export const sourceUrl = (source: Source) => source.doc === 'reference' ? source.url : `/sources/${source.doc === 'prd' ? 'prd' : 'design-starter'}.pdf#page=${source.page}`;
 export const getCard = (id: string) => cards.find(card => card.id === id)!;
