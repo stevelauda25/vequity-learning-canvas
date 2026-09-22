@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exit Radar — JSON for Design</title>
+<style>
+* { box-sizing: border-box; }
+body { max-width: 1000px; margin: 0 auto; padding: 28px 24px 64px; color: #202124; background: #fff; font: 16px/1.65 system-ui, sans-serif; }
+nav { display: flex; flex-wrap: wrap; gap: 10px 24px; padding-bottom: 20px; border-bottom: 1px solid rgb(0 0 0 / 10%); }
+a { color: #036ad3; text-underline-offset: 3px; }
+h1, h2, h3, strong { font-weight: 500; }
+h1 { font-size: 28px; line-height: 1.3; margin-top: 36px; }
+h2 { font-size: 23px; margin-top: 36px; }
+h3 { font-size: 19px; margin-top: 28px; }
+p, li { overflow-wrap: anywhere; }
+li + li { margin-top: 10px; }
+pre { overflow-x: auto; padding: 20px; border: 1px solid rgb(0 0 0 / 10%); border-radius: 8px; background: #f6f7f8; line-height: 1.6; }
+code { font: 0.86em/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+pre code { font-size: 13px; }
+hr { border: 0; border-top: 1px solid rgb(0 0 0 / 10%); margin: 32px 0; }
+.context { color: #50545a; font-size: 14px; }
+@media (max-width: 600px) { body { padding: 20px 16px 40px; } h1 { font-size: 24px; } pre { padding: 14px; } }
+</style></head><body>
+<nav aria-label="Reference files"><a href="/sources/client-updates/report.html">Example report HTML</a><a href="/sources/client-updates/sample.json">Fictional sample JSON</a><a href="/sources/client-updates/json-for-design.md">Original Markdown</a></nav>
+<p class="context" lang="en">Client data documentation dated 21 September 2026. The JSON example uses the fictional company Acme Payroll.</p>
+<main><h1>Exit Radar: report JSON for design</h1>
+<p>Prepared 2026-09-21 from the <code>development</code> branch. The source of truth is <code>Automations/agents-api-v2/agents_api_v2/matching/models/ma_intelligence_payload.py</code> (<code>ExitRadarPayload</code> / <code>ExitRadarDocument</code>, EPD-2433).</p>
+<p>Read this together with the design starter and PRD on <a href="https://linear.app/vequity/issue/EPD-2389/ship-exit-radar-v1-monthly-who-is-buying-in-your-space-report">EPD-2389</a>. This file only describes the data. The brief describes the page.</p>
+<hr>
+<h2>1. Shape</h2>
+<p>Each report is stored as two parts. <code>run_metadata</code> holds engine provenance, which is never shown to users. <code>document</code> holds the report content. The identity keys use snake_case and the section keys use camelCase. The payload is rejected if it contains any key not listed here.</p>
+<pre><code>{
+  &quot;run_metadata&quot;: {
+    &quot;model&quot;: &quot;string&quot;,
+    &quot;run_id&quot;: &quot;string&quot;,
+    &quot;profile&quot;: &quot;exit-radar-v1&quot;,
+    &quot;profile_hash&quot;: &quot;string&quot;,
+    &quot;engine&quot;: &quot;matching-v3&quot;,
+    &quot;corpus_snapshot&quot;: &quot;string | null&quot;,
+    &quot;contract_version&quot;: &quot;6&quot;
+  },
+  &quot;document&quot;: {
+    &quot;entity_id&quot;: &quot;string&quot;,               // the company the report is about
+    &quot;entity_name&quot;: &quot;string&quot;,
+    &quot;generated_at&quot;: &quot;string&quot;,            // ISO timestamp, e.g. 2026-09-01T00:04:12Z
+    &quot;type&quot;: &quot;exitRadar&quot;,
+    &quot;windowLabel&quot;: &quot;24 months | 5 years&quot;,
+    &quot;insufficientPrecedent&quot;: false,      // true = thin report
+    &quot;caveat&quot;: &quot;string | null&quot;,           // shown with a thin report
+    &quot;undatedCount&quot;: 0,                   // window deals with no date
+    &quot;nearMissesTotal&quot;: 0,                // INTERNAL (see §3)
+
+    &quot;stats&quot;: {                            // 3 stat tiles; can be null
+      &quot;dealCount&quot;: 0,                     // deals in the window
+      &quot;pctStrategic&quot;: 0,                  // whole number 0–100
+      &quot;pctPe&quot;: 0                          // whole number 0–100
+    },
+
+    &quot;cards&quot;: [{                           // buyer cards, max 6, already ranked
+      &quot;entityId&quot;: &quot;string | null&quot;,        // null = buyer can&#x27;t be linked
+      &quot;name&quot;: &quot;string&quot;,
+      &quot;dealCount&quot;: 0,
+      &quot;buyerType&quot;: &quot;Strategic | PE | null&quot;,
+      &quot;overlapCapabilityIds&quot;: [&quot;string&quot;],
+      &quot;overlapCapabilityNames&quot;: [&quot;string&quot;],   // capabilities the subject ALSO holds
+      &quot;thesis&quot;: &quot;string | null&quot;           // buyer&#x27;s stated reason, quoted from a source
+    }],
+
+    &quot;transactions&quot;: [{                    // sourced deals table, max 20, newest first
+      &quot;dealRef&quot;: &quot;string&quot;,
+      &quot;date&quot;: &quot;string | null&quot;,
+      &quot;acquirerEntityId&quot;: &quot;string | null&quot;,
+      &quot;acquirerName&quot;: &quot;string | null&quot;,
+      &quot;targetName&quot;: &quot;string&quot;,
+      &quot;value&quot;: 0,                         // integer or null → show &quot;n/d&quot;
+      &quot;statedReason&quot;: &quot;string | null&quot;,    // quote from the source
+      &quot;sourceUrl&quot;: &quot;string&quot;,              // always present
+      &quot;addedCapabilityIds&quot;: [&quot;string&quot;],
+      &quot;addedCapabilityNames&quot;: [&quot;string&quot;]  // limited to capabilities the subject holds
+    }],
+
+    &quot;dealsInSpace&quot;: [ /* INTERNAL (see §3) */ ],
+    &quot;nearMisses&quot;:   [ /* INTERNAL (see §3) */ ]
+  }
+}</code></pre>
+<h3>Planned addition: &quot;what&#x27;s changed&quot; (not on <code>development</code> yet)</h3>
+<p>Blake&#x27;s open branch <code>epd-2437-exit-radar-watch-backend</code> adds this to <code>document</code> on each monthly refresh:</p>
+<pre><code>&quot;delta&quot;: {
+  &quot;newBuyerNames&quot;: [&quot;string&quot;],
+  &quot;newDealRefs&quot;: [&quot;string&quot;],            // mostly &quot;date|buyer|target&quot; keys, not real deal ids
+  &quot;risenBuyerCounts&quot;: [{ &quot;name&quot;: &quot;string&quot;, &quot;from&quot;: 1, &quot;to&quot;: 3 }],
+  &quot;quietMonth&quot;: true                    // nothing new this month
+}</code></pre>
+<hr>
+<h2>2. Illustrative examples (fictional data)</h2>
+<h3>Sparse: the normal case</h3>
+<pre><code>{
+  &quot;entity_id&quot;: &quot;…&quot;,
+  &quot;entity_name&quot;: &quot;Acme Payroll&quot;,
+  &quot;generated_at&quot;: &quot;2026-09-01T00:04:12Z&quot;,
+  &quot;type&quot;: &quot;exitRadar&quot;,
+  &quot;windowLabel&quot;: &quot;5 years&quot;,
+  &quot;insufficientPrecedent&quot;: false,
+  &quot;caveat&quot;: null,
+  &quot;undatedCount&quot;: 1,
+  &quot;nearMissesTotal&quot;: 3,
+  &quot;stats&quot;: { &quot;dealCount&quot;: 4, &quot;pctStrategic&quot;: 50, &quot;pctPe&quot;: 25 },
+  &quot;cards&quot;: [
+    { &quot;entityId&quot;: &quot;…&quot;, &quot;name&quot;: &quot;Northwind Holdings&quot;, &quot;dealCount&quot;: 2, &quot;buyerType&quot;: &quot;Strategic&quot;,
+      &quot;overlapCapabilityIds&quot;: [], &quot;overlapCapabilityNames&quot;: [], &quot;thesis&quot;: null },
+    { &quot;entityId&quot;: null, &quot;name&quot;: &quot;Harbor Capital&quot;, &quot;dealCount&quot;: 1, &quot;buyerType&quot;: &quot;PE&quot;,
+      &quot;overlapCapabilityIds&quot;: [], &quot;overlapCapabilityNames&quot;: [],
+      &quot;thesis&quot;: &quot;Expands our platform into mid-market HR services.&quot; }
+  ],
+  &quot;transactions&quot;: [
+    { &quot;dealRef&quot;: &quot;epa:…&quot;, &quot;date&quot;: &quot;2025-03&quot;, &quot;acquirerEntityId&quot;: null, &quot;acquirerName&quot;: &quot;Harbor Capital&quot;,
+      &quot;targetName&quot;: &quot;PayBridge&quot;, &quot;value&quot;: null,
+      &quot;statedReason&quot;: &quot;Expands our platform into mid-market HR services.&quot;,
+      &quot;sourceUrl&quot;: &quot;https://example.com/press-release&quot;,
+      &quot;addedCapabilityIds&quot;: [], &quot;addedCapabilityNames&quot;: [] }
+  ],
+  &quot;dealsInSpace&quot;: [],
+  &quot;nearMisses&quot;: []
+}</code></pre>
+<p>Compare this example with the tile values. There are 4 deals but only 1 sourced transaction row. The percentages add up to 75 because 1 buyer is unclassified. Most fields are empty or null.</p>
+<h3>Dense: the upper limit</h3>
+<p>Up to 6 cards and up to 20 rows. Cards have overlap chips, values, and theses. This matches the reference mock on EPD-2389.</p>
+<hr>
+<h2>3. Internal fields: keep off the customer page</h2>
+<ul>
+<li><code>dealsInSpace</code>: every deal in the window, including deals without a source. It&#x27;s used for operator checks.</li>
+<li><code>nearMisses</code> / <code>nearMissesTotal</code>: deals excluded from the window. <code>reason</code> holds machine codes such as <code>outside-24-month-window</code>.</li>
+<li><code>run_metadata</code>: all engine provenance.</li>
+</ul>
+<hr>
+<h2>4. Brief items the data doesn&#x27;t support yet</h2>
+<p>Confirm each of these with Blake (engineering) before designing it in.</p>
+<ol>
+<li><strong>Largest disclosed value on buyer cards.</strong> Cards have no value field.</li>
+<li><strong>Next-update date.</strong> The server computes it (the next 1st of the month), but the API response doesn&#x27;t include it yet.</li>
+<li><strong>&quot;What&#x27;s changed&quot; (<code>delta</code>).</strong> It&#x27;s on an unmerged branch.</li>
+<li><strong>&quot;Watch this space&quot;.</strong> The backend API exists on the same branch. No button exists yet. The current &quot;Let me know when available&quot; button only saves to the browser.</li>
+<li><strong>Customer access.</strong> The report endpoint is Admin-only today.</li>
+</ol></main></body></html>

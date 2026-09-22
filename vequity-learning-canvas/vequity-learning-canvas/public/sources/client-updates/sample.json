@@ -1,0 +1,52 @@
+{
+  "entity_id": "…",
+  "entity_name": "Acme Payroll",
+  "generated_at": "2026-09-01T00:04:12Z",
+  "type": "exitRadar",
+  "windowLabel": "5 years",
+  "insufficientPrecedent": false,
+  "caveat": null,
+  "undatedCount": 1,
+  "nearMissesTotal": 3,
+  "stats": {
+    "dealCount": 4,
+    "pctStrategic": 50,
+    "pctPe": 25
+  },
+  "cards": [
+    {
+      "entityId": "…",
+      "name": "Northwind Holdings",
+      "dealCount": 2,
+      "buyerType": "Strategic",
+      "overlapCapabilityIds": [],
+      "overlapCapabilityNames": [],
+      "thesis": null
+    },
+    {
+      "entityId": null,
+      "name": "Harbor Capital",
+      "dealCount": 1,
+      "buyerType": "PE",
+      "overlapCapabilityIds": [],
+      "overlapCapabilityNames": [],
+      "thesis": "Expands our platform into mid-market HR services."
+    }
+  ],
+  "transactions": [
+    {
+      "dealRef": "epa:…",
+      "date": "2025-03",
+      "acquirerEntityId": null,
+      "acquirerName": "Harbor Capital",
+      "targetName": "PayBridge",
+      "value": null,
+      "statedReason": "Expands our platform into mid-market HR services.",
+      "sourceUrl": "https://example.com/press-release",
+      "addedCapabilityIds": [],
+      "addedCapabilityNames": []
+    }
+  ],
+  "dealsInSpace": [],
+  "nearMisses": []
+}
