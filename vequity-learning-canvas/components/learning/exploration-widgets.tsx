@@ -285,7 +285,7 @@ const journeyEvents: TimelineEvent[] = [
     action: 'Try the Watch interaction',
   },
   {
-    label: 'Sep 15',
+    label: 'Sep 1',
     date: '2026',
     title: 'The next monthly report',
     note: '3 new deals · 1 new buyer',

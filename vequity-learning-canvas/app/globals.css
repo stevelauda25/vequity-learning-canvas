@@ -5780,3 +5780,16 @@ a:focus-visible {
     font-size: 18px;
   }
 }
+
+/* Monthly publication alignment — existing theme, proposed edition control. */
+.monthly-alignment-links { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:20px 0; }
+.report-edition-control { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:12px; margin:18px 0 12px; }
+.report-edition-control label { display:flex; flex-direction:column; gap:6px; color:#505050; font-size:12px; }
+.report-edition-control select { min-height:38px; max-width:100%; border:1px solid #d5d5d5; border-radius:8px; padding:8px 34px 8px 12px; background:#fff; color:#171717; font:inherit; font-size:14px; }
+.report-edition-control select:focus-visible { outline:2px solid #036ad3; outline-offset:3px; }
+.report-archive-notice { display:flex; gap:10px; padding:14px 16px; margin:12px 0; border:1px solid #dedede; border-radius:8px; background:#f6f6f6; font-size:13px; }
+.report-archive-notice > svg { flex-shrink:0; margin-top:2px; }
+.report-archive-notice strong { font-weight:500; }
+.report-archive-notice p { margin:4px 0 0; color:#555; }
+.report-dates { flex-wrap:wrap; }
+@media (max-width:640px) { .report-edition-control label { width:100%; } .report-edition-control select { width:100%; } }

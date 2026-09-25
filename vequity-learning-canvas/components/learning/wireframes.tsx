@@ -39,7 +39,7 @@ export const scenarios = [
     name: 'ExampleCo: next month',
     tag: 'Continue the story',
     description:
-      'The same ExampleCo report, one month later: 12 → 15 deals, Northstar 5 → 6, and new buyer Cedar Capital with two deals. Three new sourced rows and one returning buyer’s increased count are visible.',
+      'The same ExampleCo report, at the next scheduled release on September 1: 12 → 15 deals, Northstar 5 → 6, and new buyer Cedar Capital with two deals. Three new sourced rows and one returning buyer’s increased count are visible.',
   },
   {
     id: 'dense',
@@ -82,6 +82,13 @@ export const scenarios = [
     tag: 'Last good report',
     description:
       'A failed refresh preserves the last successful report and its date. The next-update date moves to the retry. This explanation belongs to the learning canvas; no error banner appears inside the product.',
+  },
+  {
+    id: 'history',
+    name: 'Previous edition',
+    tag: 'Design proposal',
+    description:
+      'Proposed scope addition: choose an earlier edition without changing its original data or your company Watch subscription. Return to September to see the latest report. Date-only next updates use the organization’s schedule; no publication hour is assumed.',
   },
 ] as const;
 export type Scenario = (typeof scenarios)[number]['id'];
@@ -169,7 +176,7 @@ const targets = [
 const rows = assignments.map((buyer, i) => ({
   buyer: buyers[buyer].name,
   target: targets[i],
-  date: new Date(Date.UTC(2026, 8, 12 - (i < 3 ? i * 7 : 33 + (i - 3) * 22)))
+  date: new Date(Date.UTC(2026, 7, 28 - (i < 3 ? i * 7 : 33 + (i - 3) * 22)))
     .toISOString()
     .slice(0, 10),
   value:
@@ -198,18 +205,18 @@ const initialRows = rows.slice(0, 2).map((row, i) => ({
   date: new Date(Date.UTC(2026, 7, 10 - i * 22)).toISOString().slice(0, 10),
 }));
 const refreshedRows = [
-  { ...initialRows[0], target: 'Meadow Benefits', date: '2026-09-12' },
+  { ...initialRows[0], target: 'Meadow Benefits', date: '2026-08-28' },
   {
     ...initialRows[1],
     buyer: 'Cedar Capital',
     target: 'Brook Advisory',
-    date: '2026-09-05',
+    date: '2026-08-22',
   },
   {
     ...initialRows[1],
     buyer: 'Cedar Capital',
     target: 'Grove Benefits',
-    date: '2026-08-28',
+    date: '2026-08-17',
   },
   ...initialRows,
 ];
@@ -250,19 +257,20 @@ function WireframeBody({ initial }: { initial: Scenario }) {
   const fallback = scenario === 'fallback';
   const quiet = scenario === 'quiet';
   const retry = scenario === 'retry';
+  const historical = scenario === 'history';
   const loading = scenario === 'loading';
   const preparing = scenario === 'preparing';
   const company = persona === 'own' ? 'ExampleCo' : 'Example Portfolio Co';
   const window = fallback ? '5 years' : '24 months';
   const next = retry
-    ? 'Sep 18, 2026'
+    ? 'Sep 2, 2026'
     : scenario === 'sparse' || fallback
-      ? 'Sep 15, 2026'
-      : 'Oct 15, 2026';
+      ? 'Sep 1, 2026'
+      : 'Oct 1, 2026';
   const reportDate =
-    retry || scenario === 'sparse' || fallback
+    retry || historical || scenario === 'sparse' || fallback
       ? 'Aug 15, 2026'
-      : 'Sep 15, 2026';
+      : 'Sep 1, 2026';
   const visibleRows = dense ? rows : refreshed ? refreshedRows : initialRows;
   const watch = () => {
     const value = !watched[persona];
@@ -424,11 +432,41 @@ function WireframeBody({ initial }: { initial: Scenario }) {
                 capabilities you hold. Buyer counts include all deals in the
                 space; the table shows sourced transactions only.
               </p>
+              {(refreshed || historical) && (
+                <div className="report-edition-control">
+                  <label>
+                    <span>Report edition</span>
+                    <select
+                      value={historical ? 'august' : 'september'}
+                      onChange={(event) => {
+                        setScenario(event.target.value === 'august' ? 'history' : 'refreshed');
+                        setSample(null);
+                        setMessage('');
+                      }}
+                    >
+                      <option value="september">September 2026 · Latest</option>
+                      <option value="august">August 2026 · First report</option>
+                    </select>
+                  </label>
+                  {historical && (
+                    <Button variant="outline" onClick={() => setScenario('refreshed')}>
+                      View latest report <ArrowRight size={14} />
+                    </Button>
+                  )}
+                </div>
+              )}
+              {historical && (
+                <output className="report-archive-notice">
+                  <Clock3 size={16} />
+                  <div><strong>Viewing a previous edition</strong><p>This is the original August report. September 2026 is the latest edition.</p></div>
+                </output>
+              )}
               <div className="report-dates">
-                <span>
+                {!historical && <span>
                   <CalendarDays size={13} /> Next update: <b>{next}</b>
-                </span>
+                </span>}
                 <span>Report updated {reportDate}</span>
+                {!historical && <span>Dates follow the organization’s schedule</span>}
               </div>
               {message && (
                 <output className="watch-message">
@@ -490,7 +528,7 @@ function WireframeBody({ initial }: { initial: Scenario }) {
                   <div>
                     <strong>No new activity since Aug 15, 2026</strong>
                     <p>
-                      Your report was refreshed on Sep 15. Next check: Oct 15,
+                      Your report was refreshed on Sep 1. Next check: Oct 1,
                       2026.
                     </p>
                   </div>
@@ -772,7 +810,7 @@ export function EmailPreview({
         </h3>
         <p>
           {quiet
-            ? `We refreshed ${company}’s report and found no new activity. Your next check is Oct 15, 2026.`
+            ? `We refreshed ${company}’s report and found no new activity. Your next check is Oct 1, 2026.`
             : `Your refreshed report for ${company} is ready. ${returningBuyers === 1 ? 'One returning buyer also increased its deal count.' : 'Two returning buyers also increased their deal counts.'} Explore the latest sourced activity in your space.`}
         </p>
         <Button onClick={onReport}>
@@ -780,7 +818,7 @@ export function EmailPreview({
         </Button>
         <footer>
           You’re receiving this because you’re watching {company}.<br />
-          Next update: Oct 15, 2026.
+          Next update: Oct 1, 2026.
         </footer>
       </div>
     </div>

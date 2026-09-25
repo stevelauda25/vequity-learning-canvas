@@ -120,7 +120,7 @@ export const lessons: Lesson[] = [
       text: 'An operator has prepared ExampleCo’s first report. Alex sees 12 deals in the last 24 months, one displayed buyer, and two sourced transaction rows. Alex selects Watch to receive the next monthly update.',
     },
     terms: [],
-    details: ['first-report', 'journey-flow', 'watch-design'],
+    details: ['first-report', 'journey-flow', 'watch-design', 'monthly-publication'],
     quiz: {
       question: 'If nobody selects Watch, what happens to an existing report?',
       options: [
@@ -239,7 +239,7 @@ export const lessons: Lesson[] = [
       text: 'Northstar’s card has no capability chips and no disclosed value in the first ExampleCo report. The evidence is limited. The dense wireframe is a separate illustration of the maximum layout, not the expected amount of data.',
     },
     terms: [],
-    details: ['states-overview', 'data-reality', 'watch-design'],
+    details: ['states-overview', 'data-reality', 'watch-design', 'report-history'],
     quiz: {
       question:
         'A sourced transaction has no derived capability. What should the page do?',
@@ -257,7 +257,7 @@ export const lessons: Lesson[] = [
     id: 'delivery',
     question: 'What changes when Alex returns next month?',
     answer:
-      'Compare the refreshed report with the previous run, then tell Alex what changed. Every watcher receives a short email after a successful monthly refresh—even when nothing is new.',
+      'On the 1st of each month, publish the refreshed report and compare it with the previous run. Watchers receive the matching email once the report is available—even when nothing is new.',
     essentials: [
       {
         title: 'An active month',
@@ -273,11 +273,11 @@ export const lessons: Lesson[] = [
       },
     ],
     story: {
-      title: 'September 15 · Alex receives an update',
+      title: 'September 1 · Alex receives an update',
       text: 'In our continuing example, three new sourced deals bring ExampleCo’s total from 12 to 15. Northstar grows from five to six deals; Cedar Capital appears with two. The email announces “3 new deals, 1 new buyer in your space” and links to the refreshed report.',
     },
     terms: ['Delta'],
-    details: ['schedule', 'email', 'report-delta', 'engineering-direction'],
+    details: ['monthly-publication', 'schedule', 'publication-timezone', 'email', 'report-delta', 'engineering-direction'],
     quiz: {
       question:
         'Alex last visited three months ago. What is the change summary compared with?',
@@ -303,7 +303,7 @@ export const lessons: Lesson[] = [
       },
       {
         title: 'Design proposals to review',
-        text: 'The layouts here, the placement of changes, and the reversible Watch interaction are proposals. The EPD-2389 reference mock is still pending.',
+        text: 'The edition selector and organization-based publication time zone are new proposals. History extends the original v1 scope. Layouts, change presentation and the reversible Watch interaction are also design proposals.',
       },
       {
         title: 'Outside v1',
@@ -312,10 +312,10 @@ export const lessons: Lesson[] = [
     ],
     story: {
       title: 'The complete ExampleCo loop',
-      text: 'An operator prepares the report. Alex explores public evidence and chooses Watch. The report refreshes monthly. An email brings Alex back to the changes—or confirms a quiet month. That is the v1 experience.',
+      text: 'An operator prepares the report. Alex explores public evidence and chooses Watch. The report refreshes on the 1st. An email brings Alex back to the changes—or confirms a quiet month. That is the v1 experience.',
     },
     terms: [],
-    details: ['in-scope', 'non-goals', 'open-questions', 'rollout'],
+    details: ['in-scope', 'non-goals', 'report-history', 'publication-timezone', 'open-questions', 'rollout'],
     quiz: {
       question: 'Which behavior is part of v1?',
       options: [

@@ -405,7 +405,7 @@ function LessonVisual({
           {[
             [
               'Header',
-              'ExampleCo · Last 24 months · Next update Sep 15 · Watch',
+              'ExampleCo · Last 24 months · Next update Sep 1 · Watch',
             ],
             ['Three statistics', '12 deals · 67% strategic · 17% PE'],
             ['Buyer cards', 'Northstar Group · 5 deals · Largest value n/d'],
@@ -463,6 +463,7 @@ function LessonVisual({
           ['fallback', 'Five-year window', 'Wider initial reporting window'],
           ['quiet', 'Quiet month', 'A refresh with nothing new'],
           ['dense', 'Dense report', 'A separate example of the ceiling'],
+          ['history', 'Previous edition', 'Proposed: browse history and return to latest'],
         ].map(([scenario, label, note]) => (
           <button
             key={scenario}

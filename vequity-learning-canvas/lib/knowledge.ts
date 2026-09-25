@@ -1,4 +1,5 @@
 import { clientUpdateCards } from './client-updates.ts';
+import { monthlyAlignmentCards, monthlyAlignmentSource } from './monthly-alignment.ts';
 export type Source = { doc: 'prd' | 'starter'; page: number; label: string; url?: never } | { doc: 'reference'; label: string; url: string; page?: never };
 export type Card = { id: string; chapter: string; title: string; summary: string; kind?: 'requirement' | 'proposal' | 'question' | 'context' | 'update' | 'snapshot'; points: string[]; sources: Source[] };
 export const cardKindLabel = (kind: Card['kind']) => ({ requirement: 'Product requirement', proposal: 'Design proposal', question: 'Review observation', context: 'Document context', update: 'Client direction', snapshot: 'Dated evidence' })[kind || 'requirement'];
@@ -18,6 +19,7 @@ export const chapters = [
 ];
 export const cards: Card[] = [
  ...clientUpdateCards,
+ ...monthlyAlignmentCards,
  {id:'concept',chapter:'overview',title:'Know who’s buying. Understand why.',summary:'A monthly, evidence-led report of the companies acquiring businesses like yours.',kind:'requirement',points:[
  'Exit Radar v1 is a feature in the existing Vequity Intelligence area. It replaces the Coming soon page and connects the Company Home card to the live report.',
  'The core promise: who is buying in a company’s space, why those acquisitions happened, and what changed since the previous monthly report.',
@@ -72,7 +74,7 @@ export const cards: Card[] = [
  '2. No report yet: show being prepared. Report exists: display the latest successful version.',
  '3. Read the statistics, buyer cards, and recent transactions. Follow a source to inspect the public evidence.',
  '4. Optionally select Watch this space. This opts the current user into this company’s refresh emails.',
- '5. Each month the report refreshes. The watcher email links back to the page and leads with the same change headline.',
+ '5. On the 1st of each month the report refreshes. The watcher email links back to the page and leads with the same change headline.',
  '6. On return, show new transactions, new buyers, and increased buyer deal counts. Quiet months remain visible.'
  ],sources:[prd(2,'I'),prd(8,'V.3'),prd(9,'V.9')]},
  {id:'report-header',chapter:'report',title:'01 · Header & orientation',summary:'Name the subject, explain the data, and show the next update.',points:[
@@ -109,7 +111,7 @@ export const cards: Card[] = [
  'A separate section or integration into the buyer/transaction sections is allowed. Four structural sections and the fifth delta requirement are therefore compatible.'
  ],sources:[prd(7,'IV · Set 1'),prd(9,'V.9')]},
  {id:'window',chapter:'rules',title:'24 months → 5 years',summary:'Fewer than 10 deals in the initial window triggers the wider report.',kind:'requirement',points:[
- 'The initial report looks back 24 months. If the space contains fewer than 10 deals in that window, build the report over the last five years instead.',
+ 'Publication frequency is separate from the analysis window. The initial report looks back 24 months. If the space contains fewer than 10 deals in that window, build it over the last five years instead.',
  'The deal-count tile must name the window actually used. The extended window must never be silent.',
  'Ten deals exactly does not trigger fallback. Count the corpus, not only sourced rows in the table.',
  'Clarification for implementation: the PRD defines the initial fallback but does not explicitly say whether subsequent refreshes re-evaluate the window.'
@@ -156,11 +158,11 @@ export const cards: Card[] = [
  'The prototype simulates the interaction locally. It sends no emails and does not create a production subscription.'
  ],sources:[prd(2,'Design brief'),prd(8,'V.3')]},
  {id:'schedule',chapter:'delivery',title:'The next date is a promise',summary:'The schedule supplies the date. The page reflects it.',kind:'requirement',points:[
- 'Every company with a generated report refreshes monthly, even if no member has clicked Watch.',
+ 'Every company with a generated report refreshes on the 1st of each month, even if no member has clicked Watch. The first-of-month date is confirmed by the client update.',
  'The header’s next-update date comes from the system of record for scheduling. It must never be computed client-side.',
  'On failure, retain the last good report and its date. Move the next-update date to the retry; do not leave a past promise or show an error banner.',
  'An operator rerun must be able to repair incorrect data by superseding the displayed report without deleting history.'
- ],sources:[prd(8,'V.3'),prd(9,'V.6'),prd(11,'VII'),prd(14,'XI')]},
+ ],sources:[monthlyAlignmentSource,prd(8,'V.3'),prd(9,'V.6'),prd(11,'VII'),prd(14,'XI')]},
  {id:'email',chapter:'delivery',title:'One email, two outcomes',summary:'Activity headline or quiet-month confirmation, always linking back.',kind:'requirement',points:[
  'Only users who opted in on that company’s report receive the refresh notification. Non-watchers receive nothing.',
  'Active month example: 3 new deals, 1 new buyer in your space. It must match the page’s change headline.',
@@ -172,7 +174,7 @@ export const cards: Card[] = [
  'The PO recommends starting with scheduled runs, but this is direction for engineering triage, not a v1 architecture requirement.',
  'Persist the set of deals in the company’s space for each run. Compute changes by comparing snapshots.',
  'A future event-driven producer could update membership as deals arrive, while the page and email keep consuming the same change model.',
- 'At a hypothetical 400 reports, monthly scheduling is about 13 runs per day. At 10k+ reports, repeated retrieval becomes a larger concern.',
+ 'The earlier PRD’s hypothetical 400 reports ≈ 13 runs/day is an averaged planning example. A common first-of-month publication date concentrates the delivery workload; the average does not specify the new release schedule.',
  'These scale figures are planning scenarios from the PRD, not today’s deployment scale.'
  ],sources:[prd(12,'Direction'),prd(13,'Direction')]},
  {id:'in-scope',chapter:'scope',title:'What ships in v1',summary:'Two report surfaces, monthly refresh, per-user Watch, one email.',kind:'requirement',points:[

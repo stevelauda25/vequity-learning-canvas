@@ -39,7 +39,7 @@ The latest source review fixed rigid timeline heights, overview tiles responding
 
 ## Review
 
-Click a canvas card for its full explanation and links to the original PDF page. The wireframe explorer includes sparse, ExampleCo’s next month, dense, loading, being prepared, five-year fallback, quiet month, and retry scenarios. Both personas and the proposed Watch/Unwatch interaction can be explored. Notification previews link back to the matching report scenario. The continuing example moves from 12 deals on August 15 to 15 on September 15; the dense scenario is a separate illustration of the maximum layout.
+Click a canvas card for its full explanation and links to the original PDF page. The wireframe explorer includes sparse, ExampleCo’s next month, dense, loading, being prepared, five-year fallback, quiet month, and retry scenarios. Both personas and the proposed Watch/Unwatch interaction can be explored. Notification previews link back to the matching report scenario. The continuing example moves from 12 deals on August 15 to 15 on September 1; the dense scenario is a separate illustration of the maximum layout.
 
 The interactive learning scenarios use fictional company names, figures, dates, and quotes; their sample source buttons open a fictional-source preview. The supplied VanZandt HTML is labeled separately as a dated report artifact, while the Acme Payroll JSON is the documentation’s fictional example. No production data is fetched; no subscriptions are created; no emails are sent. Correct knowledge-check answers and acceptance-checklist progress are saved in browser storage only, with a temporary in-memory fallback when writes are blocked. Visiting a chapter does not count as passing its check.
 
@@ -110,3 +110,11 @@ Official deployment reference: https://vercel.com/docs/frameworks/frontend/vite
 - `public/sources/`: unmodified copies of the supplied PDFs.
 
 Known content clarifications are collected in chapter 8: missing acquisition-reason quotes, unclassified buyer cards, fallback re-evaluation on refresh, and a user-facing definition of “space.” These do not change the PRD's explicit statement that no blocking decisions remain.
+
+## Monthly publication alignment · 25 September 2026
+
+Client direction: recurring reports are generated/sent on the 1st. The learning examples now show an operator-triggered first report on 15 August, a refreshed edition on 1 September, and a next update on 1 October; the retry fixture uses 2 September. Transaction dates are adjusted so no example transaction postdates its report. Quiet-month and email examples use the same schedule.
+
+The Wireframe Explorer’s **Previous edition** scenario and the September report’s **Report edition** selector demonstrate the proposed history extension: August keeps its original 12-deal snapshot, September has 15, Watch stays attached to the company, and **View latest report** returns to September. Archived views do not show a stale next-update promise.
+
+Organization-based publication time zones and user-local timestamp formatting are labeled design proposals. Since the mock schedule has dates rather than real instants, its dates are explicitly labeled as the organization’s schedule. No precise release hour is fabricated. Customer-facing history is a proposed v1 scope addition, while retention of history is already in the PRD. The client message and our interpretation are recorded separately in `public/sources/client-updates/monthly-alignment.html`; original client source files remain intact. Engineering coordination is deferred.

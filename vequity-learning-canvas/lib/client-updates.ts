@@ -26,6 +26,7 @@ export const updateSources = {
 } satisfies Record<string, Source>;
 
 export const updateResources = [
+  { title: 'Monthly publication alignment', description: '25 Sep discussion · first-of-month release, timezone proposal, and edition history', url: '/sources/client-updates/monthly-alignment.html' },
   {
     title: 'Design direction & exploration brief',
     description:
